@@ -38,7 +38,7 @@ function CabinTable() {
   });
 
   if (isLoading) return <Spinner />;
-  if(error) return <p>something went wrong!</p>
+  if (error) return <p>something went wrong!</p>;
 
   return (
     <Table role='table'>
