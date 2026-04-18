@@ -50,7 +50,7 @@ function CreateCabinForm({ cabinToEdit, closeModal }) {
           newCabinData: { ...data, image },
           id: editId,
         },
-        options
+        options,
       );
     else createCabin({ ...data, image }, options);
   };
