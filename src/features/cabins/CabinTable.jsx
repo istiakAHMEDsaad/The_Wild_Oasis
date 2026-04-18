@@ -33,21 +33,22 @@ function CabinTable() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ['cabin'],
+    queryKey: ['cabins'],
     queryFn: getCabins,
   });
 
   if (isLoading) return <Spinner />;
+  if(error) return <p>something went wrong!</p>
 
   return (
     <Table role='table'>
       <TableHeader role='row'>
-        <div>em</div>
+        <div></div>
         <div>Cabin</div>
         <div>Capacity</div>
         <div>Price</div>
         <div>Discount</div>
-        <div>em</div>
+        <div></div>
       </TableHeader>
 
       {cabins.map((cabin) => (
