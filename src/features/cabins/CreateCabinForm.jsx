@@ -31,7 +31,7 @@ function CreateCabinForm() {
     error,
     isPending: isCreating,
   } = useMutation({
-    mutationFn: createCabin,
+    mutationFn: (newCabin) => createCabin(newCabin),
     onSuccess: () => {
       toast.success('New cabin successfully created');
       queryClient.invalidateQueries({ queryKey: ['cabins'] });
@@ -43,7 +43,8 @@ function CreateCabinForm() {
   if (error) return <p style={{ color: 'red' }}>Something Went Wrong!</p>;
 
   function formSubmit(data) {
-    mutate(data);
+    mutate({ ...data, image: data.image[0] });
+    // console.log(data);
   }
 
   function formError(error) {
@@ -121,7 +122,13 @@ function CreateCabinForm() {
       </FormRow>
 
       <FormRow label='Cabin photo'>
-        <FileInput id='image' accept='image/*' />
+        <FileInput
+          id='image'
+          accept='image/*'
+          {...register('image', {
+            required: 'This field required',
+          })}
+        />
       </FormRow>
 
       <FormRow>
