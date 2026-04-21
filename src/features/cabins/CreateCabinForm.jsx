@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
-import { createCabin } from '../../services/apiCabins';
+import { createEditCabin } from '../../services/apiCabins';
 import Button from '../../ui/Button';
 import FileInput from '../../ui/FileInput';
 import Form from '../../ui/Form';
@@ -32,12 +32,13 @@ function CreateCabinForm({ cabinToEdit = {} }) {
 
   const queryClient = useQueryClient();
 
+  // for create cabin
   const {
-    mutate,
-    error,
+    mutate: createCabin,
     isPending: isCreating,
+    error: createError,
   } = useMutation({
-    mutationFn: (newCabin) => createCabin(newCabin),
+    mutationFn: (newCabin) => createEditCabin(newCabin),
     onSuccess: () => {
       toast.success('New cabin successfully created');
       queryClient.invalidateQueries({ queryKey: ['cabins'] });
@@ -46,15 +47,39 @@ function CreateCabinForm({ cabinToEdit = {} }) {
     onError: (err) => toast.error(err.message),
   });
 
-  if (error) return <p style={{ color: 'red' }}>Something Went Wrong!</p>;
+  // for edit cabin
+  const {
+    mutate: editCabin,
+    isPending: isEditing,
+    error: editError,
+  } = useMutation({
+    // we can only pass 1 element in this function, so we are using object to pass multiple value
+    mutationFn: ({ newCabinData, id }) => createEditCabin(newCabinData, id),
+    onSuccess: () => {
+      toast.success('Cabin successfully edited');
+      queryClient.invalidateQueries({ queryKey: ['cabins'] });
+      reset;
+    },
+  });
 
+  const isWorking = isCreating || isEditing;
+
+  if (createError || editError)
+    return <p style={{ color: 'red' }}>Something Went Wrong!</p>;
+
+  // ========= submit the form =========
   function formSubmit(data) {
-    mutate({ ...data, image: data.image[0] });
-    // console.log(data);
+    const image = typeof data.image === 'string' ? data.image : data.image[0];
+
+    if (isEditSession) {
+      editCabin({ newCabinData: { ...data, image }, id: editId });
+    } else {
+      createCabin({ ...data, image: image });
+    }
   }
 
   function formError(error) {
-    // console.log(error);
+    if (error) console.log('check the missing field');
   }
 
   // first call formSubmit, if got an error formError function
@@ -64,7 +89,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         <Input
           type='text'
           id='name'
-          disabled={isCreating}
+          disabled={isWorking}
           {...register('name', { required: 'This field is required' })}
         />
       </FormRow>
@@ -73,7 +98,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         <Input
           type='number'
           id='maxCapacity'
-          disabled={isCreating}
+          disabled={isWorking}
           {...register('maxCapacity', {
             required: 'This field is required',
             min: {
@@ -88,7 +113,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         <Input
           type='number'
           id='regularPrice'
-          disabled={isCreating}
+          disabled={isWorking}
           {...register('regularPrice', {
             required: 'This field is required',
             min: {
@@ -103,7 +128,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         <Input
           type='number'
           id='discount'
-          disabled={isCreating}
+          disabled={isWorking}
           defaultValue={0}
           {...register('discount', {
             required: 'This field is required',
@@ -121,7 +146,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         <Textarea
           type='number'
           id='description'
-          disabled={isCreating}
+          disabled={isWorking}
           defaultValue=''
           {...register('description', { required: 'This field is required' })}
         />
@@ -142,7 +167,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         <Button variation='secondary' size='medium' type='reset'>
           Cancel
         </Button>
-        <Button variation='primary' size='medium' disabled={isCreating}>
+        <Button variation='primary' size='medium' disabled={isWorking}>
           {/* {isCreating ? 'Adding...' : 'Add cabin'} */}
           {isEditSession ? 'Edit cabin' : 'Create new cabin'}
         </Button>
