@@ -5,6 +5,8 @@ import toast from 'react-hot-toast';
 import { useState } from 'react';
 import CreateCabinForm from './CreateCabinForm';
 import useDeleteCabin from './useDeleteCabin';
+import { HiPencil, HiSquare2Stack, HiTrash } from 'react-icons/hi2';
+import useCreateCabin from './useCreateCabin';
 
 const TableRow = styled.div`
   display: grid;
@@ -82,6 +84,9 @@ const ToasterButton = styled.button`
 function CabinRow({ cabin }) {
   const [showForm, setShowForm] = useState(false);
 
+  const { isDeleting, deleteCabin } = useDeleteCabin();
+  const { isCreating, createCabin } = useCreateCabin();
+
   const {
     id: cabinId,
     name,
@@ -91,7 +96,14 @@ function CabinRow({ cabin }) {
     discount,
   } = cabin;
 
-  const { isDeleting, deleteCabin } = useDeleteCabin();
+  function handleDuplicate() {
+    createCabin({
+      name: `Copy of ${name}`,
+      maxCapacity,
+      regularPrice,
+      discount,
+    });
+  }
 
   function handleConfirmDelete(id) {
     toast((t) => (
@@ -132,12 +144,17 @@ function CabinRow({ cabin }) {
           <span>&mdash;</span>
         )}
         <div>
-          <button onClick={() => setShowForm((prev) => !prev)}>Edit</button>
+          <button disabled={isCreating} onClick={handleDuplicate}>
+            <HiSquare2Stack />
+          </button>
+          <button onClick={() => setShowForm((prev) => !prev)}>
+            <HiPencil />
+          </button>
           <button
             disabled={isDeleting}
             onClick={() => handleConfirmDelete(cabinId)}
           >
-            Delete
+            <HiTrash />
           </button>
         </div>
       </TableRow>

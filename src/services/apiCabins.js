@@ -14,10 +14,11 @@ export async function getCabins() {
 export async function createEditCabin(newCabin, id) {
   const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
 
-  const imageName = `${Math.random()}-${newCabin.image.name}`.replaceAll(
+  const imageName = `${Math.random()}-${newCabin?.image?.name}`.replaceAll(
     '/',
     '',
   );
+
   const imagePath = hasImagePath
     ? newCabin.image
     : `${import.meta.env.VITE_STORAGE_CABIN}/${imageName}`;
@@ -39,6 +40,8 @@ export async function createEditCabin(newCabin, id) {
   }
 
   // 2. Upload image
+  if (hasImagePath) return data;
+
   const { error: storageError } = await supabase.storage
     .from('cabin-images')
     .upload(imageName, newCabin.image);
