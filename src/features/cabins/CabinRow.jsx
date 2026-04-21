@@ -1,11 +1,10 @@
-import { useQueryClient } from '@tanstack/react-query';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
-import { deleteCabin } from '../../services/apiCabins';
 import { formatCurrency } from '../../utils/helpers';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
 import CreateCabinForm from './CreateCabinForm';
+import useDeleteCabin from './useDeleteCabin';
 
 const TableRow = styled.div`
   display: grid;
@@ -81,8 +80,6 @@ const ToasterButton = styled.button`
 `;
 
 function CabinRow({ cabin }) {
-  const queryClient = useQueryClient();
-
   const [showForm, setShowForm] = useState(false);
 
   const {
@@ -94,17 +91,7 @@ function CabinRow({ cabin }) {
     discount,
   } = cabin;
 
-  // const { isPending: isDeleting, mutate } = useMutation({
-  //   mutationFn: (id) => deleteCabin(id),
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ['cabins'] });
-  //   },
-  //   onError: (err) => toast.error(err.message),
-  // });
-
-  // function handleDeleteCabin(cabinId) {
-  //   mutate(cabinId);
-  // }
+  const { isDeleting, deleteCabin } = useDeleteCabin();
 
   function handleConfirmDelete(id) {
     toast((t) => (
@@ -119,14 +106,7 @@ function CabinRow({ cabin }) {
             vari='yes'
             onClick={() => {
               toast.dismiss(t.id);
-              toast.promise(deleteCabin(id), {
-                loading: 'Deleting cabin...',
-                success: () => {
-                  queryClient.invalidateQueries({ queryKey: ['cabins'] });
-                  return 'Cabin deleted successfully!';
-                },
-                error: (err) => err.message,
-              });
+              deleteCabin(id);
             }}
           >
             Yes
@@ -146,10 +126,19 @@ function CabinRow({ cabin }) {
         <Cabin>{name}</Cabin>
         <div>Fits up to {maxCapacity} guests</div>
         <Price>{formatCurrency(regularPrice)}</Price>
-        <Discount>{formatCurrency(discount)}</Discount>
+        {discount ? (
+          <Discount>{formatCurrency(discount)}</Discount>
+        ) : (
+          <span>&mdash;</span>
+        )}
         <div>
           <button onClick={() => setShowForm((prev) => !prev)}>Edit</button>
-          <button onClick={() => handleConfirmDelete(cabinId)}>Delete</button>
+          <button
+            disabled={isDeleting}
+            onClick={() => handleConfirmDelete(cabinId)}
+          >
+            Delete
+          </button>
         </div>
       </TableRow>
       {showForm && <CreateCabinForm cabinToEdit={cabin} />}
@@ -162,3 +151,17 @@ CabinRow.propTypes = {
 };
 
 export default CabinRow;
+
+/*
+onClick={() => {
+              toast.dismiss(t.id);
+              toast.promise(deleteCabin(id), {
+                loading: 'Deleting cabin...',
+                success: () => {
+                  queryClient.invalidateQueries({ queryKey: ['cabins'] });
+                  return 'Cabin deleted successfully!';
+                },
+                error: (err) => err.message,
+              });
+            }}
+*/
