@@ -4,6 +4,8 @@ import styled, { css } from 'styled-components';
 import { deleteCabin } from '../../services/apiCabins';
 import { formatCurrency } from '../../utils/helpers';
 import toast from 'react-hot-toast';
+import { useState } from 'react';
+import CreateCabinForm from './CreateCabinForm';
 
 const TableRow = styled.div`
   display: grid;
@@ -81,6 +83,8 @@ const ToasterButton = styled.button`
 function CabinRow({ cabin }) {
   const queryClient = useQueryClient();
 
+  const [showForm, setShowForm] = useState(false);
+
   const {
     id: cabinId,
     name,
@@ -133,17 +137,23 @@ function CabinRow({ cabin }) {
   }
 
   return (
-    <TableRow role='row'>
-      <Img
-        onClick={() => toast('Thanks good job', { icon: '😊' })}
-        src={image}
-      />
-      <Cabin>{name}</Cabin>
-      <div>Fits up to {maxCapacity} guests</div>
-      <Price>{formatCurrency(regularPrice)}</Price>
-      <Discount>{formatCurrency(discount)}</Discount>
-      <button onClick={() => handleConfirmDelete(cabinId)}>delete</button>
-    </TableRow>
+    <>
+      <TableRow role='row'>
+        <Img
+          onClick={() => toast('Thanks good job', { icon: '😊' })}
+          src={image}
+        />
+        <Cabin>{name}</Cabin>
+        <div>Fits up to {maxCapacity} guests</div>
+        <Price>{formatCurrency(regularPrice)}</Price>
+        <Discount>{formatCurrency(discount)}</Discount>
+        <div>
+          <button onClick={() => setShowForm((prev) => !prev)}>Edit</button>
+          <button onClick={() => handleConfirmDelete(cabinId)}>Delete</button>
+        </div>
+      </TableRow>
+      {showForm && <CreateCabinForm cabinToEdit={cabin} />}
+    </>
   );
 }
 

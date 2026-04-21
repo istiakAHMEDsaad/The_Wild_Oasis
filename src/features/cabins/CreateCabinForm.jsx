@@ -1,15 +1,16 @@
 import styled from 'styled-components';
 
-import Input from '../../ui/Input';
-import Form from '../../ui/Form';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
+import { createCabin } from '../../services/apiCabins';
 import Button from '../../ui/Button';
 import FileInput from '../../ui/FileInput';
-import Textarea from '../../ui/Textarea';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { createCabin } from '../../services/apiCabins';
-import toast from 'react-hot-toast';
-import { useForm } from 'react-hook-form';
+import Form from '../../ui/Form';
 import FormRow from '../../ui/FormRow';
+import Input from '../../ui/Input';
+import Textarea from '../../ui/Textarea';
+import PropTypes from 'prop-types';
 
 const Label = styled.label`
   font-weight: 500;
@@ -20,8 +21,13 @@ const Error = styled.span`
   color: var(--color-red-700);
 `;
 
-function CreateCabinForm() {
-  const { register, handleSubmit, getValues, formState, reset } = useForm();
+function CreateCabinForm({ cabinToEdit = {} }) {
+  const { id: editId, ...editValues } = cabinToEdit;
+  const isEditSession = Boolean(editId);
+
+  const { register, handleSubmit, getValues, formState, reset } = useForm({
+    defaultValues: isEditSession ? editValues : {},
+  });
   const { errors } = formState;
 
   const queryClient = useQueryClient();
@@ -126,7 +132,7 @@ function CreateCabinForm() {
           id='image'
           accept='image/*'
           {...register('image', {
-            required: 'This field required',
+            required: isEditSession ? false : 'This field required',
           })}
         />
       </FormRow>
@@ -137,11 +143,16 @@ function CreateCabinForm() {
           Cancel
         </Button>
         <Button variation='primary' size='medium' disabled={isCreating}>
-          {isCreating ? 'Adding...' : 'Add cabin'}
+          {/* {isCreating ? 'Adding...' : 'Add cabin'} */}
+          {isEditSession ? 'Edit cabin' : 'Create new cabin'}
         </Button>
       </FormRow>
     </Form>
   );
 }
+
+CreateCabinForm.propTypes = {
+  cabinToEdit: PropTypes.object,
+};
 
 export default CreateCabinForm;
