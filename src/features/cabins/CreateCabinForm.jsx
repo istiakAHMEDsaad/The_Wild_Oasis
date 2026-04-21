@@ -11,6 +11,7 @@ import FormRow from '../../ui/FormRow';
 import Input from '../../ui/Input';
 import Textarea from '../../ui/Textarea';
 import PropTypes from 'prop-types';
+import useCreateCabin from './useCreateCabin';
 
 const Label = styled.label`
   font-weight: 500;
@@ -32,20 +33,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
 
   const queryClient = useQueryClient();
 
-  // for create cabin
-  const {
-    mutate: createCabin,
-    isPending: isCreating,
-    error: createError,
-  } = useMutation({
-    mutationFn: (newCabin) => createEditCabin(newCabin),
-    onSuccess: () => {
-      toast.success('New cabin successfully created');
-      queryClient.invalidateQueries({ queryKey: ['cabins'] });
-      reset();
-    },
-    onError: (err) => toast.error(err.message),
-  });
+  const { createCabin, isCreating, createError } = useCreateCabin();
 
   // for edit cabin
   const {
@@ -74,7 +62,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
     if (isEditSession) {
       editCabin({ newCabinData: { ...data, image }, id: editId });
     } else {
-      createCabin({ ...data, image: image });
+      createCabin({ ...data, image: image }, { onSuccess: (data) => reset() });
     }
   }
 
