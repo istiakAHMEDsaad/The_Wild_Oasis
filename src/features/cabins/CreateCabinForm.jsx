@@ -20,7 +20,7 @@ const Error = styled.span`
   color: var(--color-red-700);
 `;
 
-function CreateCabinForm({ cabinToEdit = {} }) {
+function CreateCabinForm({ cabinToEdit = {}, onCloseModal }) {
   const { createCabin, isCreating, createError } = useCreateCabin();
   const { editCabin, editError, isEditing } = useEditCabin();
 
@@ -43,10 +43,23 @@ function CreateCabinForm({ cabinToEdit = {} }) {
     if (isEditSession) {
       editCabin(
         { newCabinData: { ...data, image }, id: editId },
-        { onSuccess: (data) => reset() },
+        {
+          onSuccess: (data) => {
+            reset();
+            onCloseModal?.();
+          },
+        },
       );
     } else {
-      createCabin({ ...data, image: image }, { onSuccess: (data) => reset() });
+      createCabin(
+        { ...data, image: image },
+        {
+          onSuccess: (data) => {
+            reset();
+            onCloseModal?.();
+          },
+        },
+      );
     }
   }
 
@@ -56,7 +69,10 @@ function CreateCabinForm({ cabinToEdit = {} }) {
 
   // first call formSubmit, if got an error formError function
   return (
-    <Form onSubmit={handleSubmit(formSubmit, formError)}>
+    <Form
+      onSubmit={handleSubmit(formSubmit, formError)}
+      type={onCloseModal ? 'modal' : 'regular'}
+    >
       <FormRow label='Cabin name' error={errors?.name?.message}>
         <Input
           type='text'
@@ -136,11 +152,15 @@ function CreateCabinForm({ cabinToEdit = {} }) {
 
       <FormRow>
         {/* type is an HTML attribute! */}
-        <Button variation='secondary' size='medium' type='reset'>
+        <Button
+          variation='secondary'
+          size='medium'
+          type='reset'
+          onClick={() => onCloseModal?.()}
+        >
           Cancel
         </Button>
         <Button variation='primary' size='medium' disabled={isWorking}>
-          {/* {isCreating ? 'Adding...' : 'Add cabin'} */}
           {isEditSession ? 'Edit cabin' : 'Create new cabin'}
         </Button>
       </FormRow>
@@ -150,6 +170,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
 
 CreateCabinForm.propTypes = {
   cabinToEdit: PropTypes.object,
+  onCloseModal: PropTypes.func.isRequired,
 };
 
 export default CreateCabinForm;
