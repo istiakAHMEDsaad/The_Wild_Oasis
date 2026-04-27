@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const StyledModal = styled.div`
   position: fixed;
@@ -48,3 +48,9 @@ const Button = styled.button`
     color: var(--color-grey-500);
   }
 `;
+
+function Modal() {
+  return <StyledModal>modal</StyledModal>;
+}
+
+export default Modal;

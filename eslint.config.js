@@ -5,6 +5,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import { defineConfig, globalIgnores } from 'eslint/config';
 import prettier from 'eslint-config-prettier';
+import unusedImports from 'eslint-plugin-unused-imports';
 
 export default defineConfig([
   globalIgnores(['dist']),
@@ -19,6 +20,10 @@ export default defineConfig([
       reactRefresh.configs.vite,
       prettier,
     ],
+
+    plugins: {
+      'unused-imports': unusedImports,
+    },
 
     languageOptions: {
       ecmaVersion: 'latest',
@@ -37,7 +42,18 @@ export default defineConfig([
 
     rules: {
       // General
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      // 'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'no-unused-vars': 'off',
+      'unused-imports/no-unused-imports': 'error',
+      'unused-imports/no-unused-vars': [
+        'warn',
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+        },
+      ],
       'no-console': 'warn',
 
       // React
