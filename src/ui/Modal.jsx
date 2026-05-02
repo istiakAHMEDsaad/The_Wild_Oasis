@@ -1,11 +1,15 @@
-import PropTypes from "prop-types";
-import { useState } from "react";
-import { useContext } from "react";
-import { cloneElement } from "react";
-import { createContext } from "react";
+import {
+  cloneElement,
+  createContext,
+  useContext,
+  useState,
+  isValidElement,
+} from "react";
 import { createPortal } from "react-dom";
 import { HiXMark } from "react-icons/hi2";
 import styled from "styled-components";
+import { useOutsideClick } from "../hooks/useOutsideClick";
+import PropTypes from "prop-types";
 
 const StyledModal = styled.div`
   position: fixed;
@@ -61,35 +65,40 @@ const ModalContext = createContext();
 function Modal({ children }) {
   const [openName, setOpenName] = useState("");
 
-  const open = setOpenName;
   const close = () => setOpenName("");
-
-  const value = { openName, open, close };
+  const open = setOpenName;
 
   return (
-    <ModalContext.Provider value={value}>{children}</ModalContext.Provider>
+    <ModalContext.Provider value={{ openName, close, open }}>
+      {children}
+    </ModalContext.Provider>
   );
 }
 
-function Open({ children, opens: openWindowName }) {
+function Open({ children, opens: opensWindowName }) {
   const { open } = useContext(ModalContext);
 
-  return cloneElement(children, { onClick: () => open(openWindowName) });
+  return cloneElement(children, { onClick: () => open(opensWindowName) });
 }
 
 function Window({ children, name }) {
-  const { close, openName } = useContext(ModalContext);
+  const { openName, close } = useContext(ModalContext);
+  const ref = useOutsideClick(close);
+
   if (name !== openName) return null;
 
   return createPortal(
     <Overlay>
-      <StyledModal>
+      <StyledModal ref={ref}>
         <Button onClick={close}>
           <HiXMark />
         </Button>
 
-        {/* <div>{children}</div> */}
-        <div>{cloneElement(children, { onCloseModal: close })}</div>
+        <div>
+          {isValidElement(children)
+            ? cloneElement(children, { onCloseModal: close })
+            : children}
+        </div>
       </StyledModal>
     </Overlay>,
     document.body,
@@ -100,17 +109,17 @@ Modal.Open = Open;
 Modal.Window = Window;
 
 Modal.propTypes = {
-  children: PropTypes.node.isRequired,
+  children: PropTypes.node,
 };
 
 Open.propTypes = {
-  children: PropTypes.node.isRequired,
-  opens: PropTypes.string,
+  children: PropTypes.element.isRequired,
+  opens: PropTypes.string.isRequired,
 };
 
 Window.propTypes = {
-  children: PropTypes.node.isRequired,
-  name: PropTypes.string,
+  children: PropTypes.element.isRequired,
+  name: PropTypes.string.isRequired,
 };
 
 export default Modal;

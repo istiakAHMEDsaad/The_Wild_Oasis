@@ -1,26 +1,23 @@
-import PropTypes from "prop-types";
-import { useRef } from "react";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
-export function useOutsideClick({ close, listenCapturing = true }) {
+export function useOutsideClick(handler, listenCapturing = true) {
   const ref = useRef();
 
-  useEffect(() => {
-    function handleClick(e) {
-      if (ref.current && !ref.current.contains(e.target)) {
-        close();
+  useEffect(
+    function () {
+      function handleClick(e) {
+        if (ref.current && !ref.current.contains(e.target)) {
+          handler();
+        }
       }
-    }
 
-    document.addEventListener("click", handleClick, listenCapturing);
-    return () =>
-      document.removeEventListener("click", handleClick, listenCapturing);
-  }, [close, listenCapturing]);
+      document.addEventListener("click", handleClick, listenCapturing);
+
+      return () =>
+        document.removeEventListener("click", handleClick, listenCapturing);
+    },
+    [handler, listenCapturing],
+  );
 
   return ref;
 }
-
-useOutsideClick.propTypes = {
-  close: PropTypes.func,
-  listenCapturing: PropTypes.bool,
-};

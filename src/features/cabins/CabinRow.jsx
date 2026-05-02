@@ -1,12 +1,12 @@
-import PropTypes from 'prop-types';
-import styled, { css } from 'styled-components';
-import { formatCurrency } from '../../utils/helpers';
-import toast from 'react-hot-toast';
-import { useState } from 'react';
-import CreateCabinForm from './CreateCabinForm';
-import useDeleteCabin from './useDeleteCabin';
-import { HiPencil, HiSquare2Stack, HiTrash } from 'react-icons/hi2';
-import useCreateCabin from './useCreateCabin';
+import PropTypes from "prop-types";
+import toast from "react-hot-toast";
+import { HiPencil, HiSquare2Stack, HiTrash } from "react-icons/hi2";
+import styled, { css } from "styled-components";
+import Modal from "../../ui/Modal";
+import { formatCurrency } from "../../utils/helpers";
+import CreateCabinForm from "./CreateCabinForm";
+import useCreateCabin from "./useCreateCabin";
+import useDeleteCabin from "./useDeleteCabin";
 
 const TableRow = styled.div`
   display: grid;
@@ -34,16 +34,16 @@ const Cabin = styled.div`
   font-size: 1.6rem;
   font-weight: 600;
   color: var(--color-grey-600);
-  font-family: 'Sono';
+  font-family: "Sono";
 `;
 
 const Price = styled.div`
-  font-family: 'Sono';
+  font-family: "Sono";
   font-weight: 600;
 `;
 
 const Discount = styled.div`
-  font-family: 'Sono';
+  font-family: "Sono";
   font-weight: 500;
   color: var(--color-green-700);
 `;
@@ -82,8 +82,6 @@ const ToasterButton = styled.button`
 `;
 
 function CabinRow({ cabin }) {
-  const [showForm, setShowForm] = useState(false);
-
   const { isDeleting, deleteCabin } = useDeleteCabin();
   const { isCreating, createCabin } = useCreateCabin();
 
@@ -94,6 +92,7 @@ function CabinRow({ cabin }) {
     maxCapacity,
     regularPrice,
     discount,
+    description,
   } = cabin;
 
   function handleDuplicate() {
@@ -102,6 +101,8 @@ function CabinRow({ cabin }) {
       maxCapacity,
       regularPrice,
       discount,
+      image,
+      description,
     });
   }
 
@@ -110,12 +111,12 @@ function CabinRow({ cabin }) {
       <ToasterContainer>
         <ToasterSpan>Are you sure?</ToasterSpan>
         <ToasterButtonContainer>
-          <ToasterButton vari='no' onClick={() => toast.dismiss(t.id)}>
+          <ToasterButton vari="no" onClick={() => toast.dismiss(t.id)}>
             No
           </ToasterButton>
 
           <ToasterButton
-            vari='yes'
+            vari="yes"
             onClick={() => {
               toast.dismiss(t.id);
               deleteCabin(id);
@@ -129,37 +130,49 @@ function CabinRow({ cabin }) {
   }
 
   return (
-    <>
-      <TableRow role='row'>
-        <Img
-          onClick={() => toast('Thanks good job', { icon: '😊' })}
-          src={image}
-        />
-        <Cabin>{name}</Cabin>
-        <div>Fits up to {maxCapacity} guests</div>
-        <Price>{formatCurrency(regularPrice)}</Price>
-        {discount ? (
-          <Discount>{formatCurrency(discount)}</Discount>
-        ) : (
-          <span>&mdash;</span>
-        )}
-        <div>
-          <button disabled={isCreating} onClick={handleDuplicate}>
-            <HiSquare2Stack />
-          </button>
-          <button onClick={() => setShowForm((prev) => !prev)}>
-            <HiPencil />
-          </button>
+    <TableRow role="row">
+      <Img
+        onClick={() => toast("Thanks good job", { icon: "😊" })}
+        src={image}
+      />
+
+      <Cabin>{name}</Cabin>
+
+      <div>Fits up to {maxCapacity} guests</div>
+
+      <Price>{formatCurrency(regularPrice)}</Price>
+
+      {discount ? (
+        <Discount>{formatCurrency(discount)}</Discount>
+      ) : (
+        <span>&mdash;</span>
+      )}
+
+      {/* button container */}
+      <div>
+        <button disabled={isCreating} onClick={handleDuplicate}>
+          <HiSquare2Stack />
+        </button>
+
+        <Modal>
+          <Modal.Open opens="edit">
+            <button>
+              <HiPencil />
+            </button>
+          </Modal.Open>
+
+          <Modal.Window name="edit">
+            <CreateCabinForm cabinToEdit={cabin} />
+          </Modal.Window>
           <button
             disabled={isDeleting}
             onClick={() => handleConfirmDelete(cabinId)}
           >
             <HiTrash />
           </button>
-        </div>
-      </TableRow>
-      {showForm && <CreateCabinForm cabinToEdit={cabin} />}
-    </>
+        </Modal>
+      </div>
+    </TableRow>
   );
 }
 
@@ -168,17 +181,3 @@ CabinRow.propTypes = {
 };
 
 export default CabinRow;
-
-/*
-onClick={() => {
-              toast.dismiss(t.id);
-              toast.promise(deleteCabin(id), {
-                loading: 'Deleting cabin...',
-                success: () => {
-                  queryClient.invalidateQueries({ queryKey: ['cabins'] });
-                  return 'Cabin deleted successfully!';
-                },
-                error: (err) => err.message,
-              });
-            }}
-*/
