@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import styled from "styled-components";
 
 const StyledMenu = styled.div`
@@ -60,3 +61,13 @@ const StyledButton = styled.button`
     transition: all 0.3s;
   }
 `;
+
+function Menus({ children }) {
+  return <div>{children}</div>;
+}
+
+Menus.propTypes = {
+  children: PropTypes.element.isRequired,
+};
+
+export default Menus;
