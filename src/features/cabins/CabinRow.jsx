@@ -164,6 +164,8 @@ function CabinRow({ cabin }) {
           <Modal.Window name="edit">
             <CreateCabinForm cabinToEdit={cabin} />
           </Modal.Window>
+
+          {/* delete */}
           <button
             disabled={isDeleting}
             onClick={() => handleConfirmDelete(cabinId)}
