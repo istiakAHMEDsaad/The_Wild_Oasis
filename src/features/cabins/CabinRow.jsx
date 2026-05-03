@@ -8,6 +8,7 @@ import CreateCabinForm from "./CreateCabinForm";
 import useCreateCabin from "./useCreateCabin";
 import useDeleteCabin from "./useDeleteCabin";
 import ConfirmDelete from "../../ui/ConfirmDelete";
+import Table from "../../ui/Table";
 
 const TableRow = styled.div`
   display: grid;
@@ -131,7 +132,7 @@ function CabinRow({ cabin }) {
   }
 
   return (
-    <TableRow role="row">
+    <Table.Row>
       <Img
         onClick={() => toast("Thanks good job", { icon: "😊" })}
         src={image}
@@ -173,12 +174,12 @@ function CabinRow({ cabin }) {
           >
             <HiTrash />
           </button> */}
-          <Modal.Open>
+          <Modal.Open opens="delete">
             <button>
               <HiTrash />
             </button>
           </Modal.Open>
-          <Modal.Window>
+          <Modal.Window name="delete">
             <ConfirmDelete
               resource="cabins"
               onConfirm={() => deleteCabin(cabinId)}
@@ -187,7 +188,7 @@ function CabinRow({ cabin }) {
           </Modal.Window>
         </Modal>
       </div>
-    </TableRow>
+    </Table.Row>
   );
 }
 
