@@ -7,6 +7,7 @@ import { formatCurrency } from "../../utils/helpers";
 import CreateCabinForm from "./CreateCabinForm";
 import useCreateCabin from "./useCreateCabin";
 import useDeleteCabin from "./useDeleteCabin";
+import ConfirmDelete from "../../ui/ConfirmDelete";
 
 const TableRow = styled.div`
   display: grid;
@@ -166,12 +167,24 @@ function CabinRow({ cabin }) {
           </Modal.Window>
 
           {/* delete */}
-          <button
+          {/* <button
             disabled={isDeleting}
             onClick={() => handleConfirmDelete(cabinId)}
           >
             <HiTrash />
-          </button>
+          </button> */}
+          <Modal.Open>
+            <button>
+              <HiTrash />
+            </button>
+          </Modal.Open>
+          <Modal.Window>
+            <ConfirmDelete
+              resource="cabins"
+              onConfirm={() => deleteCabin(cabinId)}
+              disabled={isDeleting}
+            />
+          </Modal.Window>
         </Modal>
       </div>
     </TableRow>
