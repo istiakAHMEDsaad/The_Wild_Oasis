@@ -1,8 +1,8 @@
+import Menus from "../../ui/Menus";
 import Spinner from "../../ui/Spinner";
 import Table from "../../ui/Table";
 import CabinRow from "./CabinRow";
 import useCabin from "./useCabin";
-
 
 function CabinTable() {
   const { cabins, isLoading, error } = useCabin();
@@ -11,21 +11,23 @@ function CabinTable() {
   if (error) return <p>something went wrong!</p>;
 
   return (
-    <Table columns="0.6fr 1.8fr 2.2fr 1fr 1fr 1fr">
-      <Table.Header>
-        <div></div>
-        <div>Cabin</div>
-        <div>Capacity</div>
-        <div>Price</div>
-        <div>Discount</div>
-        <div></div>
-      </Table.Header>
+    <Menus>
+      <Table columns="0.6fr 1.8fr 2.2fr 1fr 1fr 1fr">
+        <Table.Header>
+          <div></div>
+          <div>Cabin</div>
+          <div>Capacity</div>
+          <div>Price</div>
+          <div>Discount</div>
+          <div></div>
+        </Table.Header>
 
-      <Table.Body
-        data={cabins}
-        render={(cabin) => <CabinRow key={cabin.id} cabin={cabin} />}
-      ></Table.Body>
-    </Table>
+        <Table.Body
+          data={cabins}
+          render={(cabin) => <CabinRow key={cabin.id} cabin={cabin} />}
+        ></Table.Body>
+      </Table>
+    </Menus>
   );
 }
 
