@@ -6,3 +6,4 @@ Ref:
 2. reactClone docs: https://react.dev/reference/react/cloneElement
 3. createPortal: https://react.dev/reference/react-dom/createPortal
 4. getBoundingClientRect: https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
+5. Prop-Types example: https://www.geeksforgeeks.org/reactjs/reactjs-proptypes/

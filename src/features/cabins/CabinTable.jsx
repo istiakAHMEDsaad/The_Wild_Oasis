@@ -4,12 +4,14 @@ import Spinner from "../../ui/Spinner";
 import Table from "../../ui/Table";
 import CabinRow from "./CabinRow";
 import useCabin from "./useCabin";
+import Empty from "../../ui/Empty";
 
 function CabinTable() {
   const { cabins, isLoading, error } = useCabin();
   const [searchParams] = useSearchParams();
 
   if (isLoading) return <Spinner />;
+  if(!cabins.length) return <Empty resourceName='cabins' />
   if (error) return <p>something went wrong!</p>;
 
   // 1) filter
