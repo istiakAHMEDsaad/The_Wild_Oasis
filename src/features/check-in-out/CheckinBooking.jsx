@@ -35,6 +35,7 @@ function CheckinBooking() {
   const { settings, isLoadingSettings } = useSettings();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setConfirmPaid(booking?.isPaid ?? false);
   }, [booking]);
 
