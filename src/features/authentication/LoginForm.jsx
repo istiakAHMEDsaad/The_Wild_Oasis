@@ -22,6 +22,7 @@ function LoginForm() {
           onChange={(e) => setEmail(e.target.value)}
         />
       </FormRow>
+
       <FormRow label="Password" orientation="vertical">
         <Input
           type="password"
@@ -31,8 +32,9 @@ function LoginForm() {
           onChange={(e) => setPassword(e.target.value)}
         />
       </FormRow>
+      
       <FormRow orientation="vertical">
-        <Button size="large">Login</Button>
+        <Button variation="primary" size="large">Login</Button>
       </FormRow>
     </Form>
   );
