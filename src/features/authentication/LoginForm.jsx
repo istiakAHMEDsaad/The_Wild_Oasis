@@ -3,12 +3,20 @@ import Button from "../../ui/Button";
 import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
+import useLogin from "./useLogin";
+import SpinnerMini from "../../ui/SpinnerMini";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login, isLogging, error } = useLogin();
 
-  function handleSubmit() {}
+  function handleSubmit(e) {
+    e.preventDefault();
+    if (!email || !password) return;
+
+    login({ email, password });
+  }
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -20,6 +28,7 @@ function LoginForm() {
           autoComplete="username"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          disabled={isLogging}
         />
       </FormRow>
 
@@ -30,11 +39,14 @@ function LoginForm() {
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          disabled={isLogging}
         />
       </FormRow>
-      
+
       <FormRow orientation="vertical">
-        <Button variation="primary" size="large">Login</Button>
+        <Button variation="primary" size="large" disabled={isLogging}>
+          {!isLogging ? "Login" : <SpinnerMini />}
+        </Button>
       </FormRow>
     </Form>
   );
