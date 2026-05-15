@@ -7,9 +7,7 @@ function useUser() {
     queryFn: getCurrentUser,
   });
 
-  const isAuthenticated = user?.role === "authenticated" ? true : false;
-
-  return { user, isLoading, isAuthenticated };
+  return { isLoading, user, isAuthenticated: user?.role === "authenticated" };
 }
 
 export default useUser;
