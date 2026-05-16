@@ -5,11 +5,13 @@ import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
 import useLogin from "./useLogin";
 import SpinnerMini from "../../ui/SpinnerMini";
+import { useNavigate } from "react-router";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { login, isLogging } = useLogin();
+  const navigate = useNavigate();
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -21,6 +23,7 @@ function LoginForm() {
         onSettled: () => {
           setEmail("");
           setPassword("");
+          navigate("/dashboard", { replace: true });
         },
       },
     );
