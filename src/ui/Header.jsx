@@ -9,7 +9,7 @@ const StyledHeader = styled.header`
   display: flex;
   gap: 2.4rem;
   align-items: center;
-  justify-self: flex-end;
+  justify-content: end;
 `;
 
 function Header() {
