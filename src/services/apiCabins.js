@@ -96,22 +96,9 @@ export async function deleteCabin(id) {
 
       if (storageError) {
         console.error("Storage deletion error:", storageError);
-        // Note: We don't throw here because the cabin is already deleted
-        // You could handle this differently based on your requirements
       }
     }
   }
 
   return cabin;
 }
-// export async function deleteCabin(id) {
-//   const { error, data } = await supabase.from("cabins").delete().eq("id", id);
-
-//   if (error) {
-//     // eslint-disable-next-line no-console
-//     console.error(error);
-//     throw new Error("Cabins could not be deleted");
-//   }
-
-//   return data;
-// }

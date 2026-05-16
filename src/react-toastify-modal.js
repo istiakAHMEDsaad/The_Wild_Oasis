@@ -49,6 +49,3 @@ function handleConfirmDelete(id) {
     <HiTrash />
   </button>;
 }
-
-saad@example.com
-SaaD.1234
